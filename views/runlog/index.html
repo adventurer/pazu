@@ -1,0 +1,48 @@
+<div class="container-fluid" id="app">
+    <div class="row clearfix">
+        <div class="col-12">
+            <textarea  id="output" rows="30" class="form-control" aria-label="With textarea" readonly></textarea>
+        </div>
+        
+    </div>
+</div>
+<script src="/iris-ws.js"></script>
+<script>
+    var scheme = document.location.protocol == "https:" ? "wss" : "ws";
+    var port = document.location.port ? (":" + document.location.port) : "";
+    // see app.Get("/echo", ws.Handler()) on main.go
+    var wsURL = scheme + "://" + document.location.hostname + port+"/echo";
+
+    var input = document.getElementById("input");
+    var output = document.getElementById("output");
+
+    // Ws comes from the auto-served '/iris-ws.js'
+    console.log(wsURL)
+    var socket = new Ws(wsURL)
+    socket.OnConnect(function () {
+        output.innerHTML += "Status: Connected\n";
+    });
+
+    socket.OnDisconnect(function () {
+        output.innerHTML += "Status: Disconnected\n";
+    });
+
+    // read events from the server
+    socket.On("chat", function (msg) {
+        addMessage(msg);
+        var obj = document.getElementById("output");
+        obj.scrollTop = obj.scrollHeight; // good
+    });
+
+    function send() {
+        addMessage("Me: " + input.value); // write ourselves
+        socket.Emit("chat", input.value);// send chat event data to the websocket server
+        input.value = ""; // clear the input
+    }
+
+    function addMessage(msg) {
+        output.innerHTML += msg + "\n";
+    }
+</script>
+
+        

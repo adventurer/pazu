@@ -1,0 +1,75 @@
+<div class="container-fluid" id="app">
+	<div class="row">
+		<div class="col-12">
+			<form action="/project/commit" method="post">
+				<div class="card">
+					<div class="header">
+						<h2 class="text-center">新建项目</h2>
+					</div>
+					<div class="body">
+						<h6>项目名称</h6>
+						<div class="input-group mb-3">
+							<input name="Name" type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+						</div>
+						<h6>项目环境</h6>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inputGroupSelect01">选择环境</label>
+							</div>
+							<select name="Level" class="custom-select" id="inputGroupSelect01">
+								<option value="1">测试环境</option>
+								<option value="2">灰度环境</option>
+								<option value="3">线上环境</option>
+							</select>
+						</div>
+						<h6>git地址</h6>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inputGroupSelect01"><span>例子：http://uername:password@git.***</span></label>
+							</div>
+							<input name="RepoUrl" type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+						</div>
+						<h6>本地代码路径</h6>
+						<div class="input-group mb-3">
+							<input name="DeployFrom" type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="repos/xxx.com">
+						</div>
+						<h6>目标机器部署路径</h6>
+						<div class="input-group mb-3">
+							<input name="ReleaseTo" type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="/home/wwwroot">
+						</div>
+						<h6>目标机器代码储存路径</h6>
+						<div class="input-group mb-3">
+							<input name="ReleaseLibrary" type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="/home/wwwbak">
+						</div>
+						<h6>版本保留数量</h6>
+						<div class="input-group mb-3">
+							<input name="KeepVersionNum" type="text" class="form-control" aria-label="Text input with segmented dropdown button" placeholder="20">
+						</div>
+						<h6>分支/tag上线</h6>
+						<div class="input-group mb-3">
+							<label class="fancy-radio custom-color-green"><input name="RepoMode" value="branch" type="radio" checked=""><span><i></i>是</span></label>
+							<label class="fancy-radio custom-color-green"><input name="RepoMode" value="tag" type="radio"><span><i></i>否</span></label>
+						</div>
+						<h6>是否开启审核</h6>
+						<div class="input-group mb-3">
+							<label class="fancy-radio custom-color-green"><input name="Audit" value="1" type="radio" checked=""><span><i></i>是</span></label>
+							<label class="fancy-radio custom-color-green"><input name="Audit" value="0" type="radio"><span><i></i>否</span></label>
+						</div>
+						<h6>是否启用</h6>
+						<div class="input-group mb-3">
+							<label class="fancy-radio custom-color-green"><input name="Status" value="1" type="radio" checked=""><span><i></i>是</span></label>
+							<label class="fancy-radio custom-color-green"><input name="Status" value="0" type="radio"><span><i></i>否</span></label>
+						</div>
+						<h6>机器列表</h6>
+						<p class="text-danger"><code>ip:port 每台机器使用，分开,端口必须写.只有一台机器就只写ip：端口</code></p>
+						<div class="input-group mb-3">
+							<textarea name="Hosts" rows="8" class="form-control" aria-label="With textarea" placeholder="127.0.0.1:22,127.0.0.2:22,127.0.0.3:22"></textarea>
+						</div>
+							
+						<button type="submit" class="btn btn-outline-primary">提交</button>
+					</div>
+				</div>
+			</form>		
+		</div>
+	</div>
+</div>

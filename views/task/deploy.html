@@ -1,0 +1,104 @@
+<div id="dataTable" class="col-12">
+        <div class="container-fluid">
+            <div class="row">
+                <h4 class="m-t-30">测试环境</h4>
+            </div>
+            <div class="row clearfix mb-20">
+                <template v-for="v in list">
+                    <div v-if="v.Level==1" class="card bg-secondary col-3">
+                        <a class="text-white" v-bind:href="'/task/new?id='+v.Id">
+                            <div class="card-header">{ v.Name }</div>
+                            <div class="card-body">
+                                <p class="card-text">{ v.Hosts }</p>
+                                <p>{ v.ReleaseTo }</p>
+                            </div>
+                        </a>
+                    </div>
+                </template>
+            </div>
+            <hr>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <h4 class="m-t-30">灰度环境</h4>
+            </div>
+            <div class="row clearfix mb-20">
+                    <template v-for="v in list">
+                        <div v-if="v.Level==2" class="card bg-secondary col-3">
+                            <a class="text-white" v-bind:href="'/task/new?id='+v.Id">
+                                <div class="card-header">{ v.Name }</div>
+                                <div class="card-body">
+                                    <p class="card-text">{ v.Hosts }</p>
+                                    <p>{ v.ReleaseTo }</p>
+                                </div>
+                            </a>
+                        </div>
+                    </template>
+            </div>
+            <hr>
+        </div>
+
+
+        <div class="container-fluid">
+            <div class="row">
+                <h4 class="m-t-30">生产环境</h4>
+            </div>
+            <div class="row clearfix mb-20">
+                    <template v-for="v in list">
+                        <div v-if="v.Level==3" class="card bg-secondary col-3">
+                            <a class="text-white" v-bind:href="'/task/new?id='+v.Id">
+                                <div class="card-header">{ v.Name }</div>
+                                <div class="card-body">
+                                    <p class="card-text">{ v.Hosts }</p>
+                                    <p>{ v.ReleaseTo }</p>
+                                </div>
+                            </a>
+                        </div>
+                    </template>
+            </div>
+            <hr>
+        </div>
+    </div>
+
+
+    <script>
+    var vm = new Vue({
+        delimiters: ['{', '}'],
+        el: '#dataTable',
+        data: {
+        levelArr: ['测试','灰度','生产'],
+        list : []
+        },
+        created: function () {
+        axios.post('/conf',{
+            firstName:'Fred',
+            lastName:'Flintstone'
+            })
+            .then(function(res){
+                vm.list = res.data
+                console.log(res.data);
+            })
+            .catch(function(err){
+            console.log(err);
+        });
+        },
+        methods: {
+        getAnswer: function () {
+            if (this.question.indexOf('?') === -1) {
+            this.answer = 'Questions usually contain a question mark. ;-)'
+            return
+            }
+            this.answer = 'Thinking...'
+            var vm = this
+            axios.get('https://yesno.wtf/api')
+            .then(function (response) {
+                vm.answer = _.capitalize(response.data.answer)
+            })
+            .catch(function (error) {
+                vm.answer = 'Error! Could not reach the API. ' + error
+            })
+        }
+        }
+    })
+    </script>

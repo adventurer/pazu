@@ -1,0 +1,106 @@
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-12">
+            <div class="card">
+                <div class="header">
+                    {{with .project}}
+                    <h2>环境等级：{{.Level}} - {{.Name}} ： </h2>
+                    {{end}}
+                    {{with .task}}
+                    <h2>branch:{{.Branch}} 版本号：{{.CommitId}}</h2>
+                    {{end}}
+                </div>
+                <div id="app" class="body">
+                    <div class="progress progress-sm">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" v-bind:style="styleObject">
+                            <span class="sr-only">60% Complete (warning)</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                            <button v-on:click="taskShift({{ .taskID }})" type="button" class="btn btn-outline-primary">部署</button>
+                            <a href="/task/index"><button type="button" class="btn btn-outline-secondary">返回</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row clearfix">
+        <div class="col-12">
+            <textarea id="output" rows="30" class="form-control" aria-label="With textarea" readonly></textarea>
+        </div>
+        
+    </div>
+</div>
+
+<script src="/iris-ws.js"></script>
+<script>
+    var scheme = document.location.protocol == "https:" ? "wss" : "ws";
+    var port = document.location.port ? (":" + document.location.port) : "";
+    // see app.Get("/echo", ws.Handler()) on main.go
+    var wsURL = scheme + "://" + document.location.hostname + port+"/echo";
+
+    var input = document.getElementById("input");
+    var output = document.getElementById("output");
+
+    // Ws comes from the auto-served '/iris-ws.js'
+    console.log(wsURL)
+    var socket = new Ws(wsURL)
+    socket.OnConnect(function () {
+        output.innerHTML += "Status: Connected\n";
+    });
+
+    socket.OnDisconnect(function () {
+        output.innerHTML += "Status: Disconnected\n";
+    });
+
+    // read events from the server
+    socket.On("chat", function (msg) {
+        addMessage(msg);
+    });
+
+    function send() {
+        addMessage("Me: " + input.value); // write ourselves
+        socket.Emit("chat", input.value);// send chat event data to the websocket server
+        input.value = ""; // clear the input
+    }
+
+    function addMessage(msg) {
+        output.innerHTML += msg + "\n";
+    }
+</script>
+
+<script>
+var vm = new Vue({
+    delimiters: ['{', '}'],
+    el: '#app',
+    data: {
+    levelArr: ['测试','灰度','生产'],
+    list : [],
+    users:[],
+    projects:[],
+    taskStatus:['新建提交','审核通过','审核拒绝','上线完成','上线失败'],
+    styleObject: {width:"0%"},
+    },
+    created: function () {
+
+    },
+    methods: {
+    taskShift: function (id) {
+        if (confirm("确定发布？")) {
+            vm.styleObject.width = '10%';
+            axios.get('/task/shift?id='+id)
+            .then(function (response) {
+                vm.styleObject.width = '100%';
+                console.log(response.data)
+            })
+            .catch(function (error) {
+                vm.answer = 'Error! Could not reach the API. ' + error
+            })
+        }
+        
+    }
+    }
+})
+</script>

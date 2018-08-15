@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<title>登陆到pazu发布系统</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="description" content="HexaBit Bootstrap 4x Admin Template">
+<meta name="author" content="ASCaps, www.ascaps.com">
+
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<!-- VENDOR CSS -->
+<link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/assets/vendor/font-awesome/css/font-awesome.min.css">
+
+<!-- MAIN CSS -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="/assets/css/color_skins.css">
+</head>
+
+<body class="theme-green auth-main">
+    
+    <!-- WRAPPER -->
+	<div id="wrapper">
+        <div class="container">
+            
+            <div class="row clearfix">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="header">
+                            <img src="/assets/images/myface.gif" alt="..." class="rounded-circle">
+                        </div>
+                        <div class="body">
+                            <p class="lead">登陆到PAZU</p>
+                            <form class="form-auth-small" action="/user/login-submit" method="POST">
+                                <div class="form-group">
+                                    <input name="Username" type="text" class="form-control" value="" placeholder="用户名：建议真名，支持utf8">
+                                </div>
+                                <div class="form-group">
+                                    <input name="PasswordHash" type="password" class="form-control" id="signin-password" value="" placeholder="密码：">
+                                </div>
+                                <p><a href="/user/register">还没有账号？去注册。</a></p>
+                                
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">登陆</button>
+                                
+                            </form>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+    <!-- END WRAPPER -->
+
+<script src="/assets/bundles/libscripts.bundle.js"></script>    
+<script src="/assets/bundles/vendorscripts.bundle.js"></script>
+
+<script src="/assets/bundles/mainscripts.bundle.js"></script>
+</body>
+</html>

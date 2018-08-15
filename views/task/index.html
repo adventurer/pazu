@@ -1,0 +1,194 @@
+<div class="container-fluid" id="app">
+    <div class="card m-b-5">
+            <div class="row clearfix">
+                <div class="col-2">
+                    <div class="body">
+                        <select class="custom-select" id="inputGroupSelect01">
+                            <template v-for="(item,index) in projects" v-bind:item="item" v-bind:index="index">
+                                <option value="">{item}</option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-7">
+                        <div class="body search">
+                            <div class="input-group m-b-0">
+                                    <input type="text" class="form-control" placeholder="Search...">    
+                                    <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button">search</button>
+                                    </div>                                
+                            </div>
+                        </div>
+                </div>
+                <div class="col-3">
+                    <div class="body">
+                        <a href="/task/deploy" class="btn btn-primary">新建上线单</a>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="row clearfix">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="body">
+                    <div class="table-responsive">
+                        <table class="table  table-bordered">
+                            <thead>
+                            <tr>
+                                <th>开发者</th>
+                                <th>项目</th>
+                                <th>上线方式</th>
+                                <th>版本变化</th>
+                                <th>上线单标题</th>
+                                <th>上线时间</th>
+                                <th>分支</th>
+                                <th>上线commit号</th>
+                                <th>当前状态</th>
+                                <th>操作</th>			
+                            </tr>
+                            </thead>
+                            <tbody >
+                                <template v-for="v in list">
+                                    <tr>
+                                        <td>{users[v.UserId]}</td>
+                                        <td>{projects[v.ProjectId]}</td>
+                                        <td>
+                                            <div v-if="v.FileTransmissionMode == 1">
+                                                    <span class="badge badge-danger">{transmission[v.FileTransmissionMode]}</span>
+                                            </div>
+                                            <div v-else>
+                                                    <span class="badge badge-success">{transmission[v.FileTransmissionMode]}</span>
+                                            </div>
+                                        </td>
+                                        <td>{v.ExLinkId}<i class="icon-shuffle"></i>{v.LinkId}</td>
+                                        <td>{v.Title}</td>
+                                        <td>{v.CreatedAt}</td>
+                                        <td>{v.Branch}</td>
+                                        <td>{v.CommitId}</td>
+                                        <td>{taskStatus[v.Status]}</td>
+                                        <td>
+                                            <div v-if="v.Status == 0">
+                                                    <a class="badge badge-danger" v-bind:href="'/task/submmit?taskid='+v.Id">上线</a>
+                                            </div>
+                                            <div v-else>
+                                                    <a class="badge badge-success" href="javascript:;">已部署</a>
+                                            </div>
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10">
+                                            <textarea class="form-control" rows="2"  required="">{v.FileList}</textarea>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <button v-on:click="pagenation('down')" type="button" class="btn btn-outline-primary">上一页</button>
+                        <button v-on:click="pagenation('up')" type="button" class="btn btn-outline-primary">下一页</button>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+var vm = new Vue({
+    delimiters: ['{', '}'],
+    el: '#app',
+    data: {
+    levelArr: ['测试','灰度','生产'],
+    list : [],
+    users:[],
+    projects:[],
+    taskStatus:['新建提交','审核通过','审核拒绝','上线完成','上线失败'],
+    pageNo:1,
+    transmission:{1:"全量",2:"列表"},
+    styelcc:'badge-danger'
+    },
+    created: function () {
+        axios.post('/task',{
+        firstName:'Fred',
+        lastName:'Flintstone'
+        })
+        .then(function(res){
+            vm.list = res.data
+            console.log(res.data);
+        })
+        .catch(function(err){
+        console.log(err);
+        });
+
+        axios.get('/users',{
+        firstName:'Fred',
+        lastName:'Flintstone'
+        })
+        .then(function(res){
+            vm.users = res.data
+            console.log(res.data);
+        })
+        .catch(function(err){
+        console.log(err);
+        });
+
+        axios.get('/projects',{
+        firstName:'Fred',
+        lastName:'Flintstone'
+        })
+        .then(function(res){
+            vm.projects = res.data
+            console.log(res.data);
+        })
+        .catch(function(err){
+        console.log(err);
+        });
+
+        
+    },
+    methods: {
+        pagenation: function (direct) {
+            console.log(vm.pageNo)
+            if (vm.pageNo==1 && direct=="down") {
+                console.log("不能上翻了")
+                return
+            }
+            if (direct=="up") {
+                vm.pageNo = vm.pageNo+1
+                $.ajax({
+                    type: "post",
+                    url: "/task/page/"+vm.pageNo,
+                    data: {},
+                    dataType: "json",
+                    success: function(data){
+                        vm.list = data
+                    },
+                    error:function(){
+                        vm.pageNo = vm.pageNo-1
+                    }
+                    
+                });
+            } else {
+                vm.pageNo = vm.pageNo-1
+                $.ajax({
+                    type: "post",
+                    url: "/task/page/"+vm.pageNo,
+                    data: {},
+                    dataType: "json",
+                    success: function(data){
+                        vm.list = data
+                    },
+                    error:function(){
+                        vm.pageNo = vm.pageNo-1
+                    }
+                });
+            }
+            
+        }
+    }
+})
+</script>

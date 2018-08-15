@@ -1,0 +1,128 @@
+
+<div class="container-fluid" id="app">
+    <form action="/task/tasknewcommit" method="POST">
+    <input name="ProjectId" type="text" value="{{.taskId}}" hidden>
+    <div class="col-12">
+            <h3 class="text-center">{{.project.Name}}</h3>
+        <div class="card">
+            <div class="body">
+                <h6>上线单标题</h6>
+                <div class="input-group mb-3">
+                    <input name="Title" type="text" class="form-control" aria-label="Text input with checkbox">
+                </div>
+                <h6>选取分支</h6><code>选了也没用，目前只支持master</code>
+                <div class="input-group mb-3">
+                    <select name="Branch" class="custom-select" id="inputGroupSelect01">
+                    {{range $k,$v := .branchList}}
+                        <option value="{{$v}}">{{$v}}</option>
+                    {{end}}
+                    </select>
+                </div>
+                <h6>选取版本</h6>
+                <div class="input-group mb-3">
+                    <select name="CommitId" @change="commitList($event)" class="custom-select" id="inputGroupSelect02">
+                        {{range $k,$v := .logList}}
+                        <option  value="{{$v}}">{{$v}}</option>
+                        {{end}}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="body">
+                <div class="col-lg-6 col-md-12">
+                    <label class="fancy-radio custom-color-green"><input v-on:click="fileListCtl(1)" name="FileTransmissionMode" value="2" type="radio" checked=""><span><i></i>指定文件</span></label>
+                    <label class="fancy-radio custom-color-green"><input v-on:click="fileListCtl(0)" name="FileTransmissionMode" value="1" type="radio" ><span><i></i>全量上线</span></label>
+                </div>
+                <div  class="input-group input-group-sm mb-3">
+                    <textarea name="FileList" v-bind:style="{ display: showFileList }" rows="15" class="form-control" aria-label="With textarea">{content}</textarea>
+                </div>
+                <div class="input-group input-group-sm">
+                    <button type="submit" class="btn btn-outline-primary">提交</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+
+<script>
+var vm = new Vue({
+    delimiters: ['{', '}'],
+    el: '#app',
+    data: {
+    levelArr : ['测试','灰度','生产'],
+    showFileList : "block",
+    content : ''
+    },
+    created: function () {
+        // axios.post('/task/commit/{{.taskId}}/'+'{{index .logList 0}}',{
+        //     commitId : "1111",
+        // })
+        // .then(function(res){
+        //     vm.content = res.data
+        //     console.log(res.data);
+        // })
+        // .catch(function(err){
+        // console.log(err);
+        // });
+        
+        $.ajax({
+            type: "post",
+            url: "/task/commit",
+            data: {commit:'{{index .logList 0}}', task:'{{.taskId}}'},
+            dataType: "text",
+            success: function(data){
+            vm.content = data
+            }
+        });
+    },
+    methods: {
+        fileListCtl(c){
+            if (c) {
+                vm.showFileList = "block"
+            } else {
+                vm.showFileList = "none"
+                vm.content = ''
+            }
+        },
+        commitList(a){
+            $.ajax({
+                type: "post",
+                url: "/task/commit",
+                data: {commit:a.target.value, task:'{{.taskId}}'},
+                dataType: "text",
+                success: function(data){
+                vm.content = data
+                }
+            });
+
+            // axios({
+            //     method:'post',
+            //     url:'/task/commit',
+            //     data:{
+            //         commit : a.target.value,
+            //         task : '{{.taskId}}',
+            //     }
+            // }).then(function(data){
+            //     console.log(data)
+            // });
+
+            // axios.post('/task/commit',{
+            //     commitId : a.target.value,
+            //     taskId : '{{.taskId}}',
+            // })
+            // .then(function(res){
+            //     vm.content = res.data
+            //     console.log(res.data);
+            // })
+            // .catch(function(err){
+            // console.log(err);
+            // });
+        }
+    }
+})
+</script>
