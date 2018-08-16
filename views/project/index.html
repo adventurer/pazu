@@ -37,20 +37,32 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="(v, k) in list">
-									<td>{ v.Name }</td>
-									<td>{ v.Hosts }</td>
-									<td>{ levelArr[v.Level-1] }</td>
-									<td>{ v.RepoMode }</td>
-									<td>{ v.Audit }</td>
-									<td>{ v.Status }</td>
-									<td>
-										<a href="javascript:;" v-on:click="projectInit(v.Id)"><span class="badge badge-danger">初始化</span></a>
-										<a v-bind:href="'/project/edit?id='+v.Id"><span class="badge badge-primary">编辑</span></a>
-										<a v-bind:href="'/project/del?id='+v.Id" v-on:click="sure"><span class="badge badge-primary">删除</span></a>
-										<a v-bind:href="'/project/copy?id='+v.Id" v-on:click="sure"><span class="badge badge-primary">复制</span></a>
-									</td>
-								</tr>
+								<template v-for="(v, k) in list">
+										<tr>
+											<td>{ v.Name }</td>
+											<td>{ v.Hosts }</td>
+											<td>
+													<div v-if="v.Level === 1">
+															<span class="text-success">{ levelArr[v.Level-1] }</span>
+													</div>
+													<div v-else-if="v.Level === 2">
+															<span class="text-warning">{ levelArr[v.Level-1] }</span>
+													</div>
+													<div v-else-if="v.Level === 3">
+															<span class="text-danger">{ levelArr[v.Level-1] }</span>
+													</div>
+											</td>
+											<td>{ v.RepoMode }</td>
+											<td>{ v.Audit }</td>
+											<td>{ v.Status }</td>
+											<td>
+												<a href="javascript:;" v-on:click="projectInit(v.Id)"><span class="badge badge-danger">初始化</span></a>
+												<a v-bind:href="'/project/edit?id='+v.Id"><span class="badge badge-primary">编辑</span></a>
+												<a v-bind:href="'/project/del?id='+v.Id" v-on:click="sure"><span class="badge badge-primary">删除</span></a>
+												<a v-bind:href="'/project/copy?id='+v.Id" v-on:click="sure"><span class="badge badge-primary">复制</span></a>
+											</td>
+										</tr>
+								</template>
 							</tbody>
 						</table>
 					</div>
@@ -67,7 +79,8 @@
 		el: '#app',
 		data: {
 			levelArr: ['测试', '灰度', '生产'],
-			list: []
+			list: [],
+			levelColor:["l-blue","l-parpl","l-blush"]
 		},
 		created: function () {
 			axios.post('/conf', {

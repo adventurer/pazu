@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"publish/sshw"
+	"publish/websocket"
 )
 
 type Command struct {
@@ -28,10 +29,10 @@ func (c *Command) RemoteCommand(cmd string) error {
 	//当存在其他端口时分割host得到端口
 	client := c.Con()
 	log.Println("run remote command:", cmd)
-	Broadcast(Conn, fmt.Sprintf("run remote command:%s\r\n", cmd))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", cmd))
 	output, err := client.Cmd(cmd)
 	log.Println("\t", string(output))
-	Broadcast(Conn, fmt.Sprintf("%s\r\n", output))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("%s\r\n", output))
 	return err
 }
 
@@ -41,12 +42,12 @@ func (c *Command) LocalCommand(cmd string) error {
 	var handel *exec.Cmd
 	// 执行单个shell命令时, 直接运行即可
 	log.Println("run local command:", cmd)
-	Broadcast(Conn, fmt.Sprintf("run local command:%s\r\n", cmd))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run local command:%s\r\n", cmd))
 
 	handel = exec.Command("/bin/sh", "-c", cmd)
 	output, err = handel.Output()
 	log.Println("\t", string(output))
-	Broadcast(Conn, fmt.Sprintf("%s\r\n", output))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("%s\r\n", output))
 
 	return err
 }
@@ -56,12 +57,12 @@ func (c *Command) LocalCommandOutput(cmd string) (output []byte, err error) {
 	var handel *exec.Cmd
 	// 执行单个shell命令时, 直接运行即可
 	log.Println("run local command:", cmd)
-	Broadcast(Conn, fmt.Sprintf("run local command:%s\r\n", output))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run local command:%s\r\n", output))
 
 	handel = exec.Command("/bin/sh", "-c", cmd)
 	output, err = handel.Output()
 	log.Println("\t", string(output))
-	Broadcast(Conn, fmt.Sprintf("%s\r\n", output))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("%s\r\n", output))
 	return output, err
 }
 
@@ -69,7 +70,7 @@ func (c *Command) FileUpload(sourceFile, destFile string) error {
 	client := c.Con()
 	output, errput, err := client.UploadFile(sourceFile, destFile)
 	log.Println("upload file:", string(output), string(errput))
-	Broadcast(Conn, fmt.Sprintf("begin upload file: %s\r\n", output))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("begin upload file: %s\r\n", output))
 
 	return err
 }

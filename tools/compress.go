@@ -148,6 +148,8 @@ func compressFile(srcFile string, recPath string, tw *tar.Writer, fi os.FileInfo
 		if err != nil {
 			return err
 		}
+		// websocket.Broadcast(websocket.Conn, fmt.Sprintf("compress:%s\r\n", hdr.Name))
+
 	}
 	return nil
 }

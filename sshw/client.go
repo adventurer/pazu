@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"publish/websocket"
+
 	"strings"
 	"sync"
 	"time"
@@ -148,6 +150,7 @@ func (c *defaultClient) UploadFile(sourceFile, target string) (stdout, stderr st
 	}
 
 	for start, max := 0, len(data); start < max; start += DEFAULT_CHUNK_SIZE {
+
 		// <-maxThroughputChan
 		end := start + DEFAULT_CHUNK_SIZE
 		if end > max {
@@ -158,6 +161,7 @@ func (c *defaultClient) UploadFile(sourceFile, target string) (stdout, stderr st
 		if err != nil {
 			panic(err)
 		}
+		websocket.Broadcast(websocket.Conn, fmt.Sprintf("upload:%d:%d", end, len(data)))
 	}
 
 	err = stdinPipe.Close()

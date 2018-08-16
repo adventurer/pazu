@@ -9,6 +9,7 @@ import (
 	"publish/models"
 	"publish/session"
 	"publish/tools"
+	"publish/websocket"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +24,18 @@ func (c *Controllers) TaskIndex(ctx iris.Context) {
 	ctx.View("task/index.html")
 	a := "<script> var a = " + string(blob) + "</script>"
 	ctx.Write([]byte(a))
+}
+
+// 删除提交
+func (c *Controllers) TaskDel(ctx iris.Context) {
+	taskID, err := ctx.URLParamInt("taskid")
+	if err != nil {
+		ctx.WriteString("need taskid")
+		return
+	}
+	t := models.Task{Id: taskID}
+	t.Del()
+	ctx.Redirect("/task/index", 302)
 }
 
 // 查询版本记录
@@ -76,7 +89,6 @@ func (c *Controllers) TaskNewCommit(ctx iris.Context) {
 		log.Println(err)
 		return
 	}
-	// 没实现会员系统
 	task.CommitId = task.CommitId[:7]
 
 	s := session.Sess.Start(ctx)
@@ -106,13 +118,32 @@ func (c *Controllers) TaskNewCommit(ctx iris.Context) {
 func (c *Controllers) TaskNew(ctx iris.Context) {
 	id := ctx.URLParam("id")
 
-	// t := new(models.Task)
-	// task := t.Find(id)
+	t := new(models.Task)
+	task, err := t.FindUndo(id)
+	if err != nil {
+		ctx.WriteString(fmt.Sprintf("%s", err))
+	}
+
+	if task.Id > 0 {
+		ctx.WriteString(fmt.Sprintf("存在未提交的项目，先提交或删除%d", task.Id))
+		return
+	}
 
 	t1 := new(models.Project)
 	project, err := t1.Find(id)
 	if err != nil {
 		ctx.WriteString(fmt.Sprintf("%s", err))
+		return
+	}
+
+	s := session.Sess.Start(ctx)
+	userRole, err := s.GetInt("user_role")
+	if err != nil {
+		ctx.Write([]byte(fmt.Sprintf("%s", err)))
+		return
+	}
+	if userRole != 2 && project.Level == 3 {
+		ctx.WriteString("只有管理员能创建线上环境")
 		return
 	}
 
@@ -238,11 +269,11 @@ func (c *Controllers) TaskShift(ctx iris.Context) {
 
 // 完整部署
 func fullDeploy(project *models.Project, task *models.Task) {
-	tools.Broadcast(tools.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始完成部署"))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始完整部署"))
 	// 文件打包
 	destFile, err := tools.Compress(project.DeployFrom, "repos/"+task.LinkId)
 	if err != nil {
-		tools.Broadcast(tools.Conn, fmt.Sprintf("aaaa %s\r\n", err.Error()))
+		websocket.Broadcast(websocket.Conn, fmt.Sprintf("aaaa %s\r\n", err.Error()))
 		log.Println(err.Error())
 		return
 	}
@@ -267,7 +298,7 @@ func fullDeploy(project *models.Project, task *models.Task) {
 
 // 列表部署
 func listDeploy(project *models.Project, task *models.Task) {
-	tools.Broadcast(tools.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始列表部署"))
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始列表部署"))
 	// 文件打包
 	files := strings.Split(task.FileList, "\r\n")
 	for k, v := range files {

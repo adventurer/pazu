@@ -36,6 +36,7 @@
                         <table class="table  table-bordered">
                             <thead>
                             <tr>
+                                <th>#</th>
                                 <th>开发者</th>
                                 <th>项目</th>
                                 <th>上线方式</th>
@@ -51,6 +52,7 @@
                             <tbody >
                                 <template v-for="v in list">
                                     <tr>
+                                        <td>{v.Id}</td>
                                         <td>{users[v.UserId]}</td>
                                         <td>{projects[v.ProjectId]}</td>
                                         <td>
@@ -70,6 +72,7 @@
                                         <td>
                                             <div v-if="v.Status == 0">
                                                     <a class="badge badge-danger" v-bind:href="'/task/submmit?taskid='+v.Id">上线</a>
+                                                    <a class="badge badge-danger" v-bind:href="'/task/del?taskid='+v.Id">删除</a>
                                             </div>
                                             <div v-else>
                                                     <a class="badge badge-success" href="javascript:;">已部署</a>
@@ -78,7 +81,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="10">
+                                        <td colspan="11">
                                             <textarea class="form-control" rows="2"  required="">{v.FileList}</textarea>
                                         </td>
                                     </tr>

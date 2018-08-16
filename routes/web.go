@@ -68,6 +68,7 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		usersRoutes.Any("/task/commit", controller.TaskCommitList)
 		usersRoutes.Any("/task/tasknewcommit", controller.TaskNewCommit)
 		usersRoutes.Any("/task/page/{pageNo:int}", controller.TaskPage)
+		usersRoutes.Any("/task/del", controller.TaskDel)
 
 		// 文件校验
 		usersRoutes.Get("/check", controller.Conf)

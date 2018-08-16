@@ -2,16 +2,9 @@ package main
 
 import (
 	"publish/routes"
-
-	"publish/tools"
+	"publish/websocket"
 
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/sessions"
-)
-
-var (
-	cookieNameForSessionID = "mycookiesessionnameid"
-	sess                   = sessions.New(sessions.Config{Cookie: cookieNameForSessionID, AllowReclaim: true})
 )
 
 func main() {
@@ -25,7 +18,7 @@ func main() {
 
 	app.StaticWeb("./assets", "./assets")
 
-	tools.SetupWebsocket(app)
+	websocket.SetupWebsocket(app)
 
 	app.Run(iris.Addr(":8088"), iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog:                 false,

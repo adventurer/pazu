@@ -10,15 +10,18 @@
                     <h2>branch:{{.Branch}} 版本号：{{.CommitId}}</h2>
                     {{end}}
                 </div>
-                <div id="app" class="body">
+                <div class="body">
                     <div class="progress progress-sm">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" v-bind:style="styleObject">
+                        <div id="publish_bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:10%">
                             <span class="sr-only">60% Complete (warning)</span>
                         </div>
                     </div>
                     <hr>
+                    <div id="fileupload" class="progress-bar" data-transitiongoal="77" aria-valuenow="77" style="width: 10%;">0</div>
+                    <p class="text-info" id="compress"> ...</p>
+                    <hr>
                     <div class="text-center">
-                            <button v-on:click="taskShift({{ .taskID }})" type="button" class="btn btn-outline-primary">部署</button>
+                            <button onclick="taskShift(this)" data-tid="{{ .taskID }}" type="button" class="btn btn-outline-primary">部署</button>
                             <a href="/task/index"><button type="button" class="btn btn-outline-secondary">返回</button></a>
                     </div>
                 </div>
@@ -43,6 +46,8 @@
 
     var input = document.getElementById("input");
     var output = document.getElementById("output");
+    var fileupload = document.getElementById("fileupload")
+    var compress = document.getElementById("compress")
 
     // Ws comes from the auto-served '/iris-ws.js'
     console.log(wsURL)
@@ -57,7 +62,18 @@
 
     // read events from the server
     socket.On("chat", function (msg) {
-        addMessage(msg);
+        if (msg.indexOf("upload")==0) {
+            console.log(msg)
+            progress = msg.split(":")
+            fileupload.innerText = msg
+            fileupload.style = "width:"+progress[1]/progress[2]*100+"%"
+        }else if(msg.indexOf("compress")==0){
+            compress.innerText = msg
+        }else{
+            addMessage(msg);
+        }
+        var obj = document.getElementById("output");
+        obj.scrollTop = obj.scrollHeight; // good
     });
 
     function send() {
@@ -69,38 +85,21 @@
     function addMessage(msg) {
         output.innerHTML += msg + "\n";
     }
-</script>
 
-<script>
-var vm = new Vue({
-    delimiters: ['{', '}'],
-    el: '#app',
-    data: {
-    levelArr: ['测试','灰度','生产'],
-    list : [],
-    users:[],
-    projects:[],
-    taskStatus:['新建提交','审核通过','审核拒绝','上线完成','上线失败'],
-    styleObject: {width:"0%"},
-    },
-    created: function () {
-
-    },
-    methods: {
-    taskShift: function (id) {
-        if (confirm("确定发布？")) {
-            vm.styleObject.width = '10%';
-            axios.get('/task/shift?id='+id)
-            .then(function (response) {
-                vm.styleObject.width = '100%';
-                console.log(response.data)
-            })
-            .catch(function (error) {
-                vm.answer = 'Error! Could not reach the API. ' + error
-            })
+    function taskShift(e) {
+        if (!confirm("确认提交？")) {
+            return false
         }
-        
+        $(e).attr('disabled','true')
+        $.ajax({
+             type: "GET",
+             url: '/task/shift?id='+$(e).data("tid"),
+             data: {username:$("#username").val(), content:$("#content").val()},
+             dataType: "json",
+             success: function(data){
+                 document.getElementById("publish_bar").style = "width:100%"
+            }
+         });
     }
-    }
-})
+
 </script>

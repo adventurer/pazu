@@ -64,3 +64,19 @@ func (p *Task) Page(pageNo int, records *[]Task) (err error) {
 	err = Xorm.Limit(15, (pageNo-1)*15).OrderBy("id desc").Find(records)
 	return
 }
+
+// 检查未完成的上线单
+func (p *Task) FindUndo(id interface{}) (record *Task, err error) {
+	record = new(Task)
+	_, err = Xorm.Alias("o").Where("status = ? and project_id = ?", 0, id).Get(record)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	return
+}
+
+// 删除
+func (p *Task) Del() (affected int64, err error) {
+	affected, err = Xorm.Id(p.Id).Delete(p)
+	return
+}
