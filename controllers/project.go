@@ -15,6 +15,13 @@ import (
 	"github.com/kataras/iris"
 )
 
+func (c *Controllers) ProjectList(ctx iris.Context) {
+	pro := new(models.Project)
+	list := pro.List()
+	blob, _ := json.Marshal(list)
+	ctx.Write(blob)
+}
+
 func (c *Controllers) Projects(ctx iris.Context) {
 	blob, _ := json.Marshal(cache.MemProject)
 	ctx.Write(blob)

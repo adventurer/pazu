@@ -46,15 +46,13 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		// 用户管理
 
 		usersRoutes.Get("/users", controller.Users)
-		usersRoutes.Get("/users/list", controller.Conf)
-		usersRoutes.Get("/users/add", controller.Conf)
 		usersRoutes.Get("/user/logout", controller.UserLogout)
 
 		// 首页
 		usersRoutes.Get("/", controller.ProjectIndex)
 
 		// 项目配置
-		usersRoutes.Post("/conf", controller.Conf)
+		usersRoutes.Any("/project/list", controller.ProjectList)
 		usersRoutes.Get("/projects", controller.Projects)
 
 		// 我的上线单
@@ -71,7 +69,6 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		usersRoutes.Any("/task/del", controller.TaskDel)
 
 		// 文件校验
-		usersRoutes.Get("/check", controller.Conf)
 
 		// 运行日志
 		usersRoutes.Any("/runlog/index", controller.RunlogIndex)
