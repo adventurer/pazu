@@ -17,6 +17,7 @@ func main() {
 	route.InitRoute(app)
 
 	app.StaticWeb("./assets", "./assets")
+	app.StaticWeb("./html", "./html")
 
 	websocket.SetupWebsocket(app)
 

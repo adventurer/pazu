@@ -13,6 +13,6 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
-	Xorm.ShowSQL(true)
+	// Xorm.ShowSQL(true)
 	// Xorm.Logger().SetLevel(core.LOG_DEBUG)
 }

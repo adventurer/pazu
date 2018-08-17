@@ -283,12 +283,31 @@ func fullDeploy(project *models.Project, task *models.Task) {
 	port := strings.Split(project.Hosts, ":")
 	command.Host = port[0]
 	command.Port, _ = strconv.Atoi(port[1])
-	command.FileUpload(destFile, project.ReleaseLibrary+path.Base(project.DeployFrom)+"/"+task.LinkId+".tar.gz")
-	command.RemoteCommand("tar -xvf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + ".tar.gz -C " + project.ReleaseLibrary + path.Base(project.DeployFrom))
+	// 上传文件
+	err = command.FileUpload(destFile, project.ReleaseLibrary+path.Base(project.DeployFrom)+"/"+task.LinkId+".tar.gz")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// 远程解压文件
+	err = command.RemoteCommand("tar -xvf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + ".tar.gz -C " + project.ReleaseLibrary + path.Base(project.DeployFrom))
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	// 删除gz包
-	command.RemoteCommand("rm -rf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/*.tar.gz")
+	err = command.RemoteCommand("rm -rf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/*.tar.gz")
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	// 链接
-	command.RemoteCommand("ln -sfn " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + " " + project.ReleaseTo + path.Base(project.DeployFrom))
+	err = command.RemoteCommand("ln -sfn " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + " " + project.ReleaseTo + path.Base(project.DeployFrom))
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	err = os.Remove(destFile)
 	if err != nil {
 		log.Println(err.Error())
@@ -304,7 +323,9 @@ func listDeploy(project *models.Project, task *models.Task) {
 	for k, v := range files {
 		files[k] = project.DeployFrom + "/" + v
 	}
-	destFile, err := tools.CompressFiles(files, project, "repos/"+task.LinkId)
+	var destFile string
+	var err error
+	destFile, err = tools.CompressFiles(files, project, "repos/"+task.LinkId)
 	if err != nil {
 		log.Println(err)
 		return
@@ -313,21 +334,48 @@ func listDeploy(project *models.Project, task *models.Task) {
 	command := new(tools.Command)
 
 	// 更新本地代码到最新版本
-	command.LocalCommand("git -C " + project.DeployFrom + " pull")
+	err = command.LocalCommand("git -C " + project.DeployFrom + " pull")
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	port := strings.Split(project.Hosts, ":")
 	command.Host = port[0]
 	command.Port, _ = strconv.Atoi(port[1])
+
 	// 上传服务器并链接
 	command.FileUpload(destFile, project.ReleaseLibrary+path.Base(project.DeployFrom)+"/"+task.LinkId+".tar.gz")
+
 	// 备份当前版本
-	command.RemoteCommand("cp -arf " + project.ReleaseTo + path.Base(project.DeployFrom) + "/. " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId)
+	err = command.RemoteCommand("cp -arf " + project.ReleaseTo + path.Base(project.DeployFrom) + "/. " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// 合并文件
-	command.RemoteCommand("tar -xvf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + ".tar.gz -C " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId)
+	err = command.RemoteCommand("tar -xvf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + ".tar.gz -C " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// 链接
-	command.RemoteCommand("ln -sfn " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + " " + project.ReleaseTo + path.Base(project.DeployFrom))
+	err = command.RemoteCommand("ln -sfn " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + " " + project.ReleaseTo + path.Base(project.DeployFrom))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// 删除gz包
-	command.RemoteCommand("rm -rf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/*.tar.gz")
+	err = command.RemoteCommand("rm -rf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/*.tar.gz")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// 删除文件包
 	err = os.Remove(destFile)
 	if err != nil {
 		log.Println(err.Error())
