@@ -319,7 +319,7 @@ func fullDeploy(project *models.Project, task *models.Task) {
 func listDeploy(project *models.Project, task *models.Task) {
 	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始列表部署"))
 	// 文件打包
-	files := strings.Split(task.FileList, "\r\n")
+	files := strings.Split(strings.TrimSpace(task.FileList), "\r\n")
 	for k, v := range files {
 		files[k] = project.DeployFrom + "/" + v
 	}
