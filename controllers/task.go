@@ -273,7 +273,7 @@ func fullDeploy(project *models.Project, task *models.Task) {
 	// 文件打包
 	destFile, err := tools.Compress(project.DeployFrom, "repos/"+task.LinkId)
 	if err != nil {
-		websocket.Broadcast(websocket.Conn, fmt.Sprintf("aaaa %s\r\n", err.Error()))
+		websocket.Broadcast(websocket.Conn, fmt.Sprintf("upload: %s\r\n", err.Error()))
 		log.Println(err.Error())
 		return
 	}
