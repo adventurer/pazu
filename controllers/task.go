@@ -247,8 +247,8 @@ func (c *Controllers) TaskShift(ctx iris.Context) {
 	t := new(models.Task)
 	task := t.Find(id)
 
-	t1 := new(models.Project)
-	project, err := t1.Find(task.ProjectId)
+	p := new(models.Project)
+	project, err := p.Find(task.ProjectId)
 	if err != nil {
 		ctx.WriteString(fmt.Sprintf("%s", err))
 		return
@@ -256,11 +256,18 @@ func (c *Controllers) TaskShift(ctx iris.Context) {
 
 	switch task.FileTransmissionMode {
 	case 1:
-		fullDeploy(project, task)
+		err = fullDeploy(project, task)
 	case 2:
-		listDeploy(project, task)
+		err = listDeploy(project, task)
 	}
+	if err != nil {
+		websocket.Broadcast(websocket.Conn, fmt.Sprintf("部署发生了错误%s", err))
+		log.Println(err)
+		return
+	}
+
 	t.SetStatus(task.Id, 3)
+
 	result := models.NewDefaultReturn()
 	result.Sta = 1
 	blob, _ := json.Marshal(result)
@@ -268,7 +275,7 @@ func (c *Controllers) TaskShift(ctx iris.Context) {
 }
 
 // 完整部署
-func fullDeploy(project *models.Project, task *models.Task) {
+func fullDeploy(project *models.Project, task *models.Task) (err error) {
 	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始完整部署"))
 	// 文件打包
 	destFile, err := tools.Compress(project.DeployFrom, "repos/"+task.LinkId)
@@ -296,14 +303,14 @@ func fullDeploy(project *models.Project, task *models.Task) {
 		log.Println(err)
 		return
 	}
-	// 删除gz包
-	err = command.RemoteCommand("rm -rf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/*.tar.gz")
+	// 链接
+	err = command.RemoteCommand("ln -sfn " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + " " + project.ReleaseTo + path.Base(project.DeployFrom))
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	// 链接
-	err = command.RemoteCommand("ln -sfn " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/" + task.LinkId + " " + project.ReleaseTo + path.Base(project.DeployFrom))
+	// 删除gz包
+	err = command.RemoteCommand("rm -rf " + project.ReleaseLibrary + path.Base(project.DeployFrom) + "/*.tar.gz")
 	if err != nil {
 		log.Println(err)
 		return
@@ -313,10 +320,21 @@ func fullDeploy(project *models.Project, task *models.Task) {
 		log.Println(err.Error())
 		return
 	}
+
+	// 部署后命令
+	cmds := strings.Split(strings.TrimSpace(project.PostRelease), "\r\n")
+	for _, cmd := range cmds {
+		err := command.RemoteCommand(cmd)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+	return
 }
 
 // 列表部署
-func listDeploy(project *models.Project, task *models.Task) {
+func listDeploy(project *models.Project, task *models.Task) (err error) {
 	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", "开始列表部署"))
 	// 文件打包
 	files := strings.Split(strings.TrimSpace(task.FileList), "\r\n")
@@ -324,7 +342,6 @@ func listDeploy(project *models.Project, task *models.Task) {
 		files[k] = project.DeployFrom + "/" + v
 	}
 	var destFile string
-	var err error
 	destFile, err = tools.CompressFiles(files, project, "repos/"+task.LinkId)
 	if err != nil {
 		log.Println(err)
@@ -381,4 +398,15 @@ func listDeploy(project *models.Project, task *models.Task) {
 		log.Println(err.Error())
 		return
 	}
+
+	// 部署后命令
+	cmds := strings.Split(strings.TrimSpace(project.PostRelease), "\r\n")
+	for _, cmd := range cmds {
+		err := command.RemoteCommand(cmd)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+	return
 }

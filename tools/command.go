@@ -52,6 +52,17 @@ func (c *Command) LocalCommand(cmd string) error {
 	return err
 }
 
+func (c *Command) RemoteCommandOutput(cmd string) (output string, err error) {
+	//当存在其他端口时分割host得到端口
+	client := c.Con()
+	log.Println("run remote command:", cmd)
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("run remote command:%s\r\n", cmd))
+	result, err := client.Cmd(cmd)
+	output = string(result)
+	websocket.Broadcast(websocket.Conn, fmt.Sprintf("%s\r\n", output))
+	return
+}
+
 func (c *Command) LocalCommandOutput(cmd string) (output []byte, err error) {
 
 	var handel *exec.Cmd

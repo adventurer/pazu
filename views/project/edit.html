@@ -66,6 +66,11 @@
 						<div class="input-group mb-3">
 							<textarea name="Hosts" rows="8" class="form-control" aria-label="With textarea" placeholder="127.0.0.1:22,127.0.0.2:22,127.0.0.3:22">{{.project.Hosts}}</textarea>
 						</div>
+						<h6>发布后任务</h6>
+						<p class="text-danger"><code>一行一条命令</code></p>
+						<div class="input-group mb-3">
+							<textarea name="PostRelease" rows="8" class="form-control" aria-label="With textarea" placeholder="">{{.project.PostRelease}}</textarea>
+						</div>
 							
 						<button type="submit" class="btn btn-outline-primary">提交</button>
 					</div>

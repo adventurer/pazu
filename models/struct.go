@@ -99,11 +99,17 @@ type User struct {
 	Realname               string    `xorm:"not null VARCHAR(32)"`
 }
 
+type Version struct {
+	Id     string
+	Active int
+	Task   Task
+}
+
 type BasicReturn struct {
-	Sta  int         `返回码`
-	Msg  string      `返回码`
+	Sta  int         `状态吗`
+	Msg  string      `消息`
 	Code int         `返回码`
-	Data interface{} `返回码`
+	Data interface{} `数据`
 }
 
 func NewDefaultReturn() BasicReturn {

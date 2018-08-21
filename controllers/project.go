@@ -141,9 +141,9 @@ func (c *Controllers) ProjectInitialize(ctx iris.Context) {
 		log.Println("未找到仓库：" + project.DeployFrom)
 		log.Println("初始化仓库：" + project.DeployFrom)
 		cmd := "git clone -q " + project.RepoUrl + " " + project.DeployFrom
-		err = command.LocalCommand(cmd)
+		output, err := command.LocalCommandOutput(cmd)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println(err.Error(), output)
 			return
 		}
 	} else {

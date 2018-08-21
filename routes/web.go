@@ -30,7 +30,7 @@ func (r *Routes) InitRoute(app *iris.Application) {
 
 	adminRoutes := app.Party("/", middleware.Authentication, middleware.CheckAdmin)
 	{
-
+		// 项目管理
 		adminRoutes.Get("/project/index", controller.ProjectIndex)
 		adminRoutes.Get("/project/init", controller.ProjectInitialize)
 		adminRoutes.Get("/project/new", controller.ProjectNew)
@@ -39,6 +39,15 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		adminRoutes.Post("/project/edit-commit", controller.ProjectEditCommit)
 		adminRoutes.Get("/project/del", controller.ProjectDel)
 		adminRoutes.Get("/project/copy", controller.ProjectCopy)
+
+		// 版本管理
+		adminRoutes.Get("/version/ctl", controller.VersionCtl)
+		adminRoutes.Get("/version/list", controller.VersionList)
+		adminRoutes.Get("/version/switch", controller.VersionSwitch)
+
+		// 人员管理
+		// adminRoutes.Get("/user/ctl", controller.TaskCtl)
+
 	}
 
 	usersRoutes := app.Party("/", middleware.Authentication)

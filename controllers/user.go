@@ -14,11 +14,13 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+// 列表
 func (c *Controllers) Users(ctx iris.Context) {
 	blob, _ := json.Marshal(cache.MemUsers)
 	ctx.Write(blob)
 }
 
+// 登入
 func (c *Controllers) UserLoginSubmit(ctx iris.Context) {
 	user := models.User{}
 	if err := ctx.ReadForm(&user); err != nil {
@@ -51,6 +53,7 @@ func (c *Controllers) UserLoginSubmit(ctx iris.Context) {
 	}
 }
 
+// 注册提交
 func (c *Controllers) UserRegisterSubmit(ctx iris.Context) {
 	user := models.User{}
 	if err := ctx.ReadForm(&user); err != nil {
@@ -68,7 +71,18 @@ func (c *Controllers) UserRegisterSubmit(ctx iris.Context) {
 	ctx.Redirect("/user/login")
 }
 
+// 登出
 func (c *Controllers) UserLogout(ctx iris.Context) {
 	ctx.SetCookieKV("auth_key", "")
 	ctx.Redirect("/user/login", 302)
+}
+
+// 激活
+func (c *Controllers) UserActive(ctx iris.Context) {
+
+}
+
+// 删除
+func (c *Controllers) UserDel(ctx iris.Context) {
+
 }
