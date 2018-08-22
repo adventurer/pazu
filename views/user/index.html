@@ -1,0 +1,79 @@
+<div id="app" class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-12">
+            <div class="card">
+                <div class="header">
+                    <h2>用户列表</h2>
+                </div>
+                <div class="body">
+                    <div class="table-responsive">
+                        <table class="table m-b-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>用户名</th>
+                                    <th>角色</th>
+                                    <th>创建于</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+								<template v-for="(v, k) in list">
+                                        <tr>
+                                            <td>{v.Id}</td>
+                                            <td><span>{v.Username}</span></td>
+                                            <td><span class="text-info">{v.Role}</span></td>
+                                            <td>{v.CreatedAt}</td>
+                                            <td>
+                                                    <div class="btn-group" role="group">
+                                                            <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">操作</button>
+                                                            <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 35px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                                            <a class="dropdown-item" v-bind:href="'/user/active?id='+v.Id+'&role=1'">设为开发</a>
+                                                            <a class="dropdown-item" v-bind:href="'/user/active?id='+v.Id+'&role=2'">设为管理</a>
+                                                            <a class="dropdown-item" v-bind:href="'/user/del?id='+v.Id">删除</a>
+                                                            </div>
+                                                        </div>
+                                            </td>
+                                        </tr>
+								</template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	var vm = new Vue({
+		delimiters: ['{', '}'],
+		el: '#app',
+		data: {
+			list: []
+		},
+		created: function () {
+			$.ajax({
+                type: "get",
+                url: "/user/list",
+                data: {},
+                dataType: "json",
+                success: function(data){
+                    vm.list = data
+                },
+                error:function(){
+                    vm.pageNo = vm.pageNo-1
+                }
+            });
+		},
+		methods: {
+			sure:function(e){
+				if (!confirm("继续？")) {
+					e.preventDefault()
+					return
+				}
+			},
+
+		}
+	})
+</script>

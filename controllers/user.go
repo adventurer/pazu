@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"publish/cache"
 	"publish/models"
 	"publish/session"
@@ -78,12 +79,49 @@ func (c *Controllers) UserLogout(ctx iris.Context) {
 	ctx.Redirect("/user/login", 302)
 }
 
+// 用户界面
+func (c *Controllers) UserCtl(ctx iris.Context) {
+	ctx.View("user/index.html")
+}
+
+// 用户列表
+func (c *Controllers) UserList(ctx iris.Context) {
+	u := models.User{}
+	users, err := u.GetFullList()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	blob, _ := json.Marshal(users)
+	ctx.Write(blob)
+}
+
 // 激活
 func (c *Controllers) UserActive(ctx iris.Context) {
-
+	role, err := ctx.URLParamInt("role")
+	if err != nil {
+		ctx.WriteString(fmt.Sprintf("%s", err))
+		return
+	}
+	id, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.WriteString(fmt.Sprintf("%s", err))
+		return
+	}
+	u := models.User{}
+	u.SetRoleById(id, role)
+	ctx.Redirect("/user/ctl")
 }
 
 // 删除
 func (c *Controllers) UserDel(ctx iris.Context) {
+	id, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.WriteString(fmt.Sprintf("%s", err))
+		return
+	}
+	u := models.User{}
+	u.DelUserById(id)
+	ctx.Redirect("/user/ctl")
 
 }

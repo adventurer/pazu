@@ -46,7 +46,9 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		adminRoutes.Get("/version/switch", controller.VersionSwitch)
 
 		// 人员管理
-		// adminRoutes.Get("/user/ctl", controller.TaskCtl)
+		adminRoutes.Get("/user/ctl", controller.UserCtl)
+		adminRoutes.Get("/user/active", controller.UserActive)
+		adminRoutes.Get("/user/del", controller.UserDel)
 
 	}
 
@@ -56,6 +58,7 @@ func (r *Routes) InitRoute(app *iris.Application) {
 
 		usersRoutes.Get("/users", controller.Users)
 		usersRoutes.Get("/user/logout", controller.UserLogout)
+		usersRoutes.Get("/user/list", controller.UserList)
 
 		// 首页
 		usersRoutes.Get("/", controller.ProjectIndex)
