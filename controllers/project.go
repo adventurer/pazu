@@ -157,7 +157,7 @@ func (c *Controllers) ProjectInitialize(ctx iris.Context) {
 	// command.Host = "192.168.3.208"
 	// command.Port = 22
 
-	port := strings.Split(project.Hosts, ":")
+	port := strings.Split(strings.TrimSpace(project.Hosts), ":")
 	command.Host = port[0]
 	command.Port, _ = strconv.Atoi(port[1])
 

@@ -47,6 +47,7 @@ func (c *Controllers) UserLoginSubmit(ctx iris.Context) {
 
 		// 登陆后必须刷新缓存
 		cache.CacheUserHasTable()
+		cache.CacheUsers()
 		ctx.Redirect("/task/index")
 	} else {
 		ctx.WriteString(fmt.Sprintf("%s", "账号或密码错误"))

@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"path"
 	"publish/models"
 	"publish/tools"
@@ -53,7 +52,6 @@ func (c *Controllers) VersionList(ctx iris.Context) {
 	}
 
 	versions := strings.Split(strings.TrimSpace(output), "\n")
-	log.Println(len(versions))
 
 	versionsModel := models.Version{}
 	versionSlice := versionsModel.VersionList(versions)
