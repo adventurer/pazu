@@ -1,0 +1,73 @@
+<div id="app" class="container-fluid">
+    <div class="card m-b-5">
+        <form action="" method="POST">
+            <div class="row clearfix">
+                    <div class="col-2">
+                        <div class="body">
+                            <select name="Id" class="custom-select" id="inputGroupSelect01">
+                                <template v-for="(v, k) in list">
+                                    <option v-bind:value="v.Id">{v.Name}</option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                            <div class="body search">
+                                <div class="input-group m-b-0">
+                                        <input name="File" type="text" class="form-control" placeholder="Search...">    
+                                        <div class="input-group-append">
+                                            <input type="text" name="Search" value="1" hidden>
+                                            <button class="btn btn-outline-secondary" type="submit">search</button>
+                                        </div>                                
+                                </div>
+                            </div>
+                    </div>
+            </div>
+        </form>
+    </div>
+    
+</div>
+
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-12">
+            <textarea id="output" rows="30" class="form-control" aria-label="With textarea" readonly>{{.output}}</textarea>
+        </div>
+        
+    </div>
+</div>
+
+
+<script>
+        var vm = new Vue({
+            delimiters: ['{', '}'],
+            el: '#app',
+            data: {
+            levelArr: ['测试','灰度','生产'],
+            list : [],
+            users:[],
+            projects:[],
+            taskStatus:['新建提交','审核通过','审核拒绝','上线完成','上线失败'],
+            pageNo:1,
+            transmission:{1:"全量",2:"列表"},
+            styelcc:'badge-danger'
+            },
+            created: function () {
+                $.ajax({
+                    type: "post",
+                    url: "/project/list",
+                    data: {},
+                    dataType: "json",
+                    success: function(data){
+                        vm.list = data
+                    },
+                    error:function(){
+                        console.log("获取失败")
+                    }
+                });
+            },
+            methods: {
+                
+            }
+        })
+        </script>

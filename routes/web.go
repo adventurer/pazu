@@ -81,6 +81,7 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		usersRoutes.Any("/task/del", controller.TaskDel)
 
 		// 文件校验
+		usersRoutes.Any("/filecheck/index", controller.FileCheck)
 
 		// 运行日志
 		usersRoutes.Any("/runlog/index", controller.RunlogIndex)
