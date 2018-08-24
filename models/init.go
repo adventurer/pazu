@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 )
@@ -13,6 +15,12 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
+	err = Xorm.Sync(new(Health))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// Xorm.ShowSQL(true)
 	// Xorm.Logger().SetLevel(core.LOG_DEBUG)
 }

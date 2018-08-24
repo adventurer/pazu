@@ -1,6 +1,7 @@
 package main
 
 import (
+	"publish/health"
 	"publish/routes"
 	"publish/websocket"
 
@@ -21,6 +22,7 @@ func main() {
 	app.StaticWeb("./html", "./html")
 
 	websocket.SetupWebsocket(app)
+	go health.Check()
 
 	app.Run(iris.Addr(":8088"), iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog:                 false,
@@ -33,4 +35,5 @@ func main() {
 		TimeFormat:                        "Mon, 02 Jan 2006 15:04:05 GMT",
 		Charset:                           "UTF-8",
 	}))
+
 }

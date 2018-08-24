@@ -1,0 +1,85 @@
+<div class="container-fluid">
+        <div class="row clearfix">
+            <div class="col-12">
+                <div class="card text-center p-t-10 p-b-10">
+                    <a href="/health/add"><button type="button" class="btn btn-outline-primary">新增检查</button></a>
+                </div>
+            </div>
+        </div>
+        <div id="tag" class="row clearfix">
+
+        </div>
+</div>
+
+<!-- the message's input -->
+<input id="input" type="text" />
+
+<!-- when clicked then an iris websocket event will be sent to the server, at this example we registered the 'chat' -->
+<button onclick="send()">Send</button>
+
+<!-- the messages will be shown here -->
+<pre id="output"></pre>
+<!-- import the iris client-side library for browser-->
+<script src="/iris-ws.js"></script>
+
+<script>
+    var scheme = document.location.protocol == "https:" ? "wss" : "ws";
+    var port = document.location.port ? (":" + document.location.port) : "";
+    // see app.Get("/echo", ws.Handler()) on main.go
+    var wsURL = scheme + "://" + document.location.hostname + port+"/health";
+
+    var input = document.getElementById("input");
+    var output = document.getElementById("output");
+
+    // Ws comes from the auto-served '/iris-ws.js'
+    var socket = new Ws(wsURL)
+    socket.OnConnect(function () {
+        output.innerHTML += "Status: Connected\n";
+    });
+
+    socket.OnDisconnect(function () {
+        output.innerHTML += "Status: Disconnected\n";
+    });
+
+    // read events from the server
+    socket.On("chat", function (msg) {
+        obj = $.parseJSON(msg)
+        console.log(obj)
+        
+        var template = `
+        <div id="health_${obj.Health.Id}" class="col-2">
+            <div class="card">
+                <div class="card-header">${obj.Health.Name}<code id="health_${obj.Health.Id}_msg">msg</code></div>
+                <div class="card-body">
+                    <p class="card-text">连通<i id="health_${obj.Health.Id}_status"></i></p>
+                    <p class="card-text">延迟<span id="health_${obj.Health.Id}_yanshi">200ms</span></p>
+                </div>
+            </div>
+        </div>
+        `
+        card = $("#health_"+obj.Health.Id)
+        if (card.length) {
+            $("#health_"+obj.Health.Id+"_yanshi").text(obj.Cost)
+            $("#health_"+obj.Health.Id+"_msg").text(obj.Msg)
+            if (obj.Code == "200") {
+                $("#health_"+obj.Health.Id+"_status").attr("class","icon-bulb text-success")
+            }else{
+                $("#health_"+obj.Health.Id+"_status").attr("class","icon-bulb text-danger")  
+            }
+            
+        }else{
+            $("#tag").append(template)
+        }
+        // addMessage(msg);
+    });
+
+    function send() {
+        addMessage("Me: " + input.value); // write ourselves
+        socket.Emit("chat", input.value);// send chat event data to the websocket server
+        input.value = ""; // clear the input
+    }
+
+    function addMessage(msg) {
+        output.innerHTML += msg + "\n";
+    }
+</script>

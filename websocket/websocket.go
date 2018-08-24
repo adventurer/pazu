@@ -16,11 +16,13 @@ func SetupWebsocket(app *iris.Application) {
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	})
-	ws.OnConnection(handleConnection)
 
 	// register the server on an endpoint.
 	// see the inline javascript code in the websockets.html, this endpoint is used to connect to the server.
 	app.Get("/echo", ws.Handler())
+	app.Get("/health", ws.Handler())
+
+	ws.OnConnection(handleConnection)
 
 	// serve the javascript built'n client-side library,
 	// see websockets.html script tags, this path is used.
@@ -31,7 +33,7 @@ func SetupWebsocket(app *iris.Application) {
 
 func handleConnection(c websocket.Connection) {
 	fmt.Printf("\nConnection with ID: %s has been connected!\n", c.ID())
-	var myChatRoom = "room1"
+	var myChatRoom = c.Context().Path()
 	var mutex = new(sync.Mutex)
 	// Read events from browser
 	c.Join(myChatRoom)
@@ -56,6 +58,12 @@ func handleConnection(c websocket.Connection) {
 
 func Broadcast(Conn map[websocket.Connection]bool, message string) {
 	for k := range Conn {
-		k.To("room1").Emit("chat", message)
+		k.To("/echo").Emit("chat", message)
+	}
+}
+
+func BroadcastHeath(Conn map[websocket.Connection]bool, message string) {
+	for k := range Conn {
+		k.To("/health").Emit("chat", message)
 	}
 }

@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <form action="/health/addcommit" method="POST">
+            <div class="row clearfix">
+                <div class="col-8">
+                        <div class="card">
+                            <div class="header">
+                                <h2> 添加健康检查</h2>
+                            </div>
+                            <div class="body">
+                                <label for="basic-url">检查 名称</label>
+                                <div class="input-group mb-3">
+                                    <input name="Name" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                                </div>
+
+                                <label for="basic-url">检查 类型</label>                                
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="inputGroupSelect01">Options</label>
+                                    </div>
+                                    <select name="Type" class="custom-select" id="inputGroupSelect01">
+                                        <option selected="">Choose...</option>
+                                        <option value="1">url检查</option>
+                                        <option value="2">进程检查</option>
+                                    </select>
+                                </div>
+
+                                <label for="basic-url">检查 URL</label>
+                                <div class="input-group mb-3">
+                                    <input name="Url" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                                </div>
+                                <label for="basic-url">检查 间隔</label>
+                                <div class="input-group mb-3">
+                                    <input name="Interval" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                                </div>
+                                <label for="basic-url">检查 失败报警次数</label>
+                                <div class="input-group mb-3">
+                                    <input name="Report" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                                </div>
+                                <button type="submit" class="btn btn-outline-primary">提交</button>
+                                
+                            </div>
+                        </div>
+                </div>
+            </div>
+    </form>
+    
+</div>

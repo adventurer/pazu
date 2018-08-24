@@ -86,6 +86,13 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		// 运行日志
 		usersRoutes.Any("/runlog/index", controller.RunlogIndex)
 
+		// 健康检查
+		usersRoutes.Any("/health/app", controller.HealthAppIndex)
+		usersRoutes.Any("/health/process", controller.HealthAppIndex)
+
+		usersRoutes.Any("/health/add", controller.HealthAppAdd)
+		usersRoutes.Any("/health/addcommit", controller.HealthAppAddCommit)
+
 	}
 
 }
