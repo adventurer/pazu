@@ -3,7 +3,6 @@ package health
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"publish/cache"
 	"publish/models"
 	"publish/tools"
@@ -24,7 +23,6 @@ func Check() {
 			go send(v)
 		}
 		time.Sleep(1 * time.Second)
-		log.Println("send")
 	}
 }
 
