@@ -48,31 +48,18 @@ func (h *HttpTest) HttpGet() (err error) {
 	return
 }
 
-func httpPost() {
+func (h *HttpTest) HttpPost() (err error) {
 
-	resp, err := http.Post("http://www.01happy.com/demo/accept.php",
-
+	h.Response, err = C.Post(h.Url,
 		"application/x-www-form-urlencoded",
-
-		strings.NewReader("name=cjb"))
-
-	if err != nil {
-
-		fmt.Println(err)
-
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
+		strings.NewReader("fun=health"),
+	)
 
 	if err != nil {
-
-		// handle error
-
+		return
 	}
-
-	fmt.Println(string(body))
+	defer h.Response.Body.Close()
+	return
 
 }
 

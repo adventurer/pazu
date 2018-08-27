@@ -104,6 +104,7 @@ type Health struct {
 	Type      int       `xorm:"not null default 0 comment('检查类型：1app，2process') SMALLINT(6)"`
 	Name      string    `xorm:"not null VARCHAR(255)"`
 	Url       string    `xorm:"not null VARCHAR(255)"`
+	Method    string    `xorm:"not null VARCHAR(255)"`
 	Interval  int       `xorm:"not null default 3 comment('检查间隔时间') SMALLINT(6)"`
 	Report    int       `xorm:"not null default 10 comment('失败次数报警') SMALLINT(6)"`
 	CreatedAt time.Time `xorm:"not null DATETIME"`

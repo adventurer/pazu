@@ -28,9 +28,13 @@ func Check() {
 
 func send(v models.Health) {
 	var health tools.HttpTest
+	var err error
 	begin := time.Now().UnixNano()
 	health.Url = v.Url
-	err := health.HttpGet()
+	if v.Method == "post" {
+		err = health.HttpPost()
+	}
+	err = health.HttpGet()
 	end := time.Now().UnixNano()
 
 	var responseJson CheckResult
