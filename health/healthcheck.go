@@ -7,6 +7,7 @@ import (
 	"publish/models"
 	"publish/tools"
 	"publish/websocket"
+	"strings"
 	"time"
 )
 
@@ -31,10 +32,11 @@ func send(v models.Health) {
 	var err error
 	begin := time.Now().UnixNano()
 	health.Url = v.Url
-	if v.Method == "post" {
+	if strings.TrimSpace(v.Method) == "post" {
 		err = health.HttpPost()
+	} else {
+		err = health.HttpGet()
 	}
-	err = health.HttpGet()
 	end := time.Now().UnixNano()
 
 	var responseJson CheckResult

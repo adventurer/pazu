@@ -50,10 +50,17 @@ func (h *HttpTest) HttpGet() (err error) {
 
 func (h *HttpTest) HttpPost() (err error) {
 
-	h.Response, err = C.Post(h.Url,
-		"application/x-www-form-urlencoded",
-		strings.NewReader("fun=health"),
-	)
+	req, err := http.NewRequest("POST", h.Url, strings.NewReader(""))
+
+	if err != nil {
+		return
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("User-Agent", "Paw/3.1.7 (Macintosh; OS X/10.13.6) GCDHTTPRequest")
+	req.Header.Set("Connection", "close")
+
+	h.Response, err = C.Do(req)
 
 	if err != nil {
 		return
