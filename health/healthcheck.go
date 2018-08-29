@@ -9,6 +9,7 @@ import (
 	"publish/models"
 	"publish/tools"
 	"publish/websocket"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -34,7 +35,7 @@ func waringCheck(id int, err error, code int) {
 		}
 		if v.Report <= 0 {
 			log.Println("waring send a mail:", v.Name)
-			mail.SendEmail(mail.NewEmail("16620808100@163.com", "健康检查故障", v.Name+"发生故障:"+fmt.Sprintf("%s", err), "html") + "；错误码:" + code)
+			mail.SendEmail(mail.NewEmail("16620808100@163.com", "健康检查故障", v.Name+"发生故障:"+fmt.Sprintf("%s", err)+strconv.Itoa(code), "html"))
 			waring[k].Report = cache.MemHealthTable[k].Report
 		}
 	}
