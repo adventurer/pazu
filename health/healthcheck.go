@@ -64,6 +64,11 @@ func send(v models.Health) {
 	end := time.Now().UnixNano()
 
 	var responseJson CheckResult
+	if health.Response == nil {
+		return
+	}
+	log.Println(health.Response)
+
 	if err != nil {
 		waringCheck(v.Id, fmt.Sprintf("err:%s,status:%s", err.Error(), "cant access"))
 		responseJson = CheckResult{Health: v, Code: -1, Cost: (end - begin) / 1000000, Msg: fmt.Sprintf("%s", err)}
