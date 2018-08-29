@@ -68,6 +68,9 @@ func send(v models.Health) {
 		waringCheck(v.Id, err)
 		responseJson = CheckResult{Health: v, Code: -1, Cost: (end - begin) / 1000000, Msg: fmt.Sprintf("%s", err)}
 	} else {
+		if health.Response.StatusCode != 200 {
+			waringCheck(v.Id, err)
+		}
 		responseJson = CheckResult{Health: v, Code: health.Response.StatusCode, Cost: (end - begin) / 1000000, Msg: "正常"}
 	}
 
