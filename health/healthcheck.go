@@ -9,7 +9,6 @@ import (
 	"publish/models"
 	"publish/tools"
 	"publish/websocket"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -27,7 +26,7 @@ type CheckResult struct {
 	Msg    string
 }
 
-func waringCheck(id int, err error, code int) {
+func waringCheck(id int, err string) {
 	for k, v := range waring {
 		if v.Id == id {
 			waring[k].Report = waring[k].Report - 1
@@ -35,7 +34,7 @@ func waringCheck(id int, err error, code int) {
 		}
 		if v.Report <= 0 {
 			log.Println("waring send a mail:", v.Name)
-			mail.SendEmail(mail.NewEmail("16620808100@163.com", "健康检查故障", v.Name+"发生故障:"+fmt.Sprintf("%s", err)+strconv.Itoa(code), "html"))
+			mail.SendEmail(mail.NewEmail("16620808100@163.com", "健康检查故障", v.Name+"发生故障:"+err, "html"))
 			waring[k].Report = cache.MemHealthTable[k].Report
 		}
 	}
@@ -66,11 +65,11 @@ func send(v models.Health) {
 
 	var responseJson CheckResult
 	if err != nil {
-		waringCheck(v.Id, err, health.Response.StatusCode)
+		waringCheck(v.Id, fmt.Sprintf("err:%s,status:%s", err.Error(), -1))
 		responseJson = CheckResult{Health: v, Code: -1, Cost: (end - begin) / 1000000, Msg: fmt.Sprintf("%s", err)}
 	} else {
 		if health.Response.StatusCode != 200 {
-			waringCheck(v.Id, err, health.Response.StatusCode)
+			waringCheck(v.Id, fmt.Sprintf("err:%s,status:%s", err.Error(), health.Response.StatusCode))
 		}
 		responseJson = CheckResult{Health: v, Code: health.Response.StatusCode, Cost: (end - begin) / 1000000, Msg: "正常"}
 	}
