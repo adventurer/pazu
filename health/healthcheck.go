@@ -64,19 +64,12 @@ func send(v models.Health) {
 	end := time.Now().UnixNano()
 
 	var responseJson CheckResult
-	if health.Response == nil {
-		return
-	}
-	log.Println(health.Response)
 
 	if err != nil {
 		waringCheck(v.Id, fmt.Sprintf("err:%s,status:%s", err, "cant access"))
 		responseJson = CheckResult{Health: v, Code: -1, Cost: (end - begin) / 1000000, Msg: fmt.Sprintf("%s", err)}
 	} else {
-		if health.Response.StatusCode != 200 {
-			waringCheck(v.Id, fmt.Sprintf("err:%s,status:%s", err, "not 200"))
-		}
-		responseJson = CheckResult{Health: v, Code: health.Response.StatusCode, Cost: (end - begin) / 1000000, Msg: "正常"}
+		responseJson = CheckResult{Health: v, Code: health.Response.StatusCode, Cost: (end - begin) / 1000000, Msg: fmt.Sprintf("%s", health.Response.Status)}
 	}
 
 	blob, _ := json.Marshal(responseJson)
