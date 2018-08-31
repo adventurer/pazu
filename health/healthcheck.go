@@ -40,6 +40,14 @@ func waringCheck(id int, err string) {
 	}
 }
 
+func waringClear(id int) {
+	for k, v := range waring {
+		if v.Id == id {
+			waring[k].Report = cache.MemHealthTable[k].Report
+		}
+	}
+}
+
 func Check() {
 	for {
 		for _, v := range cache.MemHealthTable {
@@ -72,6 +80,7 @@ func send(v models.Health) {
 		if health.Response.StatusCode != 200 {
 			waringCheck(v.Id, fmt.Sprintf("err:%s,status:%s", "", health.Response.Status))
 		}
+		waringClear(v.Id)
 		responseJson = CheckResult{Health: v, Code: health.Response.StatusCode, Cost: (end - begin) / 1000000, Msg: fmt.Sprintf("%s", health.Response.Status)}
 	}
 

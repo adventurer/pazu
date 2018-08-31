@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"path"
 	"publish/models"
 	"publish/tools"
@@ -54,7 +53,7 @@ func (c *Controllers) FileCheck(ctx iris.Context) {
 		ctx.WriteString(fmt.Sprintf("%s", err))
 		return
 	}
-	log.Println(output)
+	// log.Println(output)
 
 	ctx.ViewData("output", output)
 	ctx.View("filecheck/index.html")

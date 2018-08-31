@@ -93,6 +93,8 @@ func (r *Routes) InitRoute(app *iris.Application) {
 		usersRoutes.Any("/health/add", controller.HealthAppAdd)
 		usersRoutes.Any("/health/addcommit", controller.HealthAppAddCommit)
 
+		usersRoutes.Any("/health/log", controller.HealthLog)
+
 	}
 
 }

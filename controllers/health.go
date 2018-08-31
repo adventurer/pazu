@@ -35,3 +35,7 @@ func (c *Controllers) HealthAppAddCommit(ctx iris.Context) {
 
 func (c *Controllers) HealthProcess(ctx iris.Context) {
 }
+
+// 运行日志检查
+func (c *Controllers) HealthLog(ctx iris.Context) {
+}

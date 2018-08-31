@@ -20,6 +20,8 @@ type HttpTest struct {
 func init() {
 	C = http.Client{
 		Transport: &http.Transport{
+			// 忽略证书错误
+			// TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			Dial: func(netw, addr string) (net.Conn, error) {
 				deadline := time.Now().Add(25 * time.Second)
 				c, err := net.DialTimeout(netw, addr, time.Second*20)

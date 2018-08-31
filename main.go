@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+
 	// 发送邮件给自己
 	// mail.SendEmail(mail.NewEmail("16620808100@163.com", "tile", "content", "html"))
 	app := iris.New()
