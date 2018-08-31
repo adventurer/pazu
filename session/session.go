@@ -1,14 +1,29 @@
 package session
 
 import (
+	"os"
 	"time"
 
+	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
+	"github.com/kataras/iris/sessions/sessiondb/boltdb"
 )
 
 var Sess = new(sessions.Sessions)
 
 func init() {
+	db, err := boltdb.New("./sessions.db", os.FileMode(0750))
+	if err != nil {
+		panic(err)
+	}
+
+	// close and unlobkc the database when control+C/cmd+C pressed
+	iris.RegisterOnInterrupt(func() {
+		db.Close()
+	})
+
+	// defer db.Close()
+
 	Sess = sessions.New(sessions.Config{
 		// Cookie string, the session's client cookie name, for example: "mysessionid"
 		//
@@ -31,4 +46,6 @@ func init() {
 		// Defaults to false.
 		AllowReclaim: true,
 	})
+
+	Sess.UseDatabase(db)
 }
