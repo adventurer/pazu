@@ -1,3 +1,4 @@
 repos/*
 .vscode/*
 .DS_Store
+sessions.db
